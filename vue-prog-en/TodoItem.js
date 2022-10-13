@@ -9,7 +9,7 @@ const TodoItem = {
     type="checkbox"
   />
   <form v-if="isEditing" @submit.prevent="handleSubmit">
-    <input v-model="text"/>
+    <input v-model="text" ref="input"/>
   </form>
   <label
     v-else
@@ -17,7 +17,8 @@ const TodoItem = {
     :class="{ 'todo__text--done': todo.done }"
     :for="'done-' + todo.id"
   >{{ todo.text }}</label>
-  <input type="checkbox" v-model="isEditing"/>
+  <input class="todo__edit" type="checkbox" v-model="isEditing"/>
+  <slot></slot>
 </li>`,
   props: ['todo'],
   emits: ["update:todo"],
@@ -35,11 +36,23 @@ const TodoItem = {
       
     },
     handleSubmit() {
+      this.isEditing = false
       this.$emit('update:todo', {
         ...this.todo,
         text: this.text
       })
-      this.isEditing = false
+    }
+  },
+  watch: {
+    isEditing: {
+      handler(newValue) {
+        if (!newValue) {
+          this.text = this.todo.text
+        } else {
+          this.$refs.input.focus()
+        }
+      },
+      flush: 'post'
     }
   }
 }

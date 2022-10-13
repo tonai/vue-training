@@ -4,6 +4,7 @@ const App = {
   },
   data() {
     return {
+      id: 0,
       title: 'Vue.js Todo App',
       newTodo: '',
       todos: [],
@@ -11,12 +12,15 @@ const App = {
     }
   },
   methods: {
+    findTodoIndex(id) {
+      return this.todos.findIndex(todo => todo.id === id)
+    },
     handleSubmit() {
       if (this.newTodo !== '') {
         this.todos.push({
           text: this.newTodo,
           done: false,
-          id: this.todos.length
+          id: this.id++
         })
         this.newTodo = ''
       }
@@ -25,8 +29,12 @@ const App = {
       this.todos.forEach(todo => todo.done = event.target.checked)
     },
     handleTodo(id, newTodo) {
-      const index = this.todos.findIndex(todo => todo.id === id)
+      const index = this.findTodoIndex(id)
       this.todos[index] = newTodo
+    },
+    handleDelete(id) {
+      const index = this.findTodoIndex(id)
+      this.todos.splice(index, 1)
     }
   },
   computed: {
@@ -46,5 +54,20 @@ const App = {
     indeterminate() {
       return this.todos.some(todo => todo.done !== this.todos[0].done)
     }
+  },
+  watch: {
+    todos: {
+      handler(newValue) {
+        localStorage.setItem('todos', JSON.stringify(newValue))
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.todos = JSON.parse(localStorage.getItem('todos')) || []
+    this.id = Math.max(-1, ...this.todos.map(todo => todo.id)) + 1
+  },
+  mounted() {
+    this.$refs.input.focus()
   }
 }

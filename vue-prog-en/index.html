@@ -13,31 +13,42 @@
         <input
           class="new-todo"
           v-model.trim="newTodo"
+          ref="input"
         />
       </form>
-      <label>
-        <input
-          type="checkbox"
-          :checked="allDone"
-          @change="handleChange"
-          :indeterminate.prop="indeterminate"
-        />
-        <template v-if="allDone">Mark all to be done</template>
-        <template v-else>Mark all done</template>
-      </label>
+      <div class="actions">
+        <label>
+          <input
+            class="action-done"
+            type="checkbox"
+            :checked="allDone"
+            @change="handleChange"
+            :indeterminate.prop="indeterminate"
+          />
+          <template v-if="allDone">Mark all to be done</template>
+          <template v-else>Mark all done</template>
+        </label>
+      </div>
       <ul class="todo-list">
         <todo-item
           v-for="todo of filteredTodos"
           :key="todo.id"
           :todo="todo"
-          @update:todo="Object.assign(todo, $event)"
           @update:todo="handleTodo(todo.id, $event)"
-        />
+        >
+          <button
+            class="todo__remove"
+            type="button"
+            @click="handleDelete(todo.id)"
+          >Delete</button>
+        </todo-item>
       </ul>
       <div>{{ allDoneLabel }}</div>
-      <button type="button" @click="display = 'all'">All</button>
-      <button type="button" @click="display = 'todo'">To do</button>
-      <button type="button" @click="display = 'done'">Done</button>
+      <div class="filters">
+        <button type="button" @click="display = 'all'">All</button>
+        <button type="button" @click="display = 'todo'">To do</button>
+        <button type="button" @click="display = 'done'">Done</button>
+      </div>
     </div>
     <script src="./TodoItem.js"></script>
     <script src="./App.js"></script>

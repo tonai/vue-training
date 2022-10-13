@@ -1,0 +1,94 @@
+* {
+  box-sizing: border-box;
+}
+
+#app {
+  width: 400px;
+  margin: 100px auto;
+}
+
+.new-todo {
+  width: 100%;
+  padding: 5px;
+}
+
+.actions {
+  margin-top: 5px;
+}
+
+.action-done {
+  margin-left: 5px;
+}
+
+.todo-list {
+  display: block;
+  padding: 0;
+  margin: 5px 0;
+}
+
+.todo {
+  display: flex;
+  list-style-type: none;
+  align-items: center;
+  flex: 1;
+  padding: 5px 0 5px 5px;
+}
+
+.todo__done,
+.todo__is-editing {
+  display: none;
+}
+
+.todo__text {
+  flex: 1;
+}
+
+.todo__text--done {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.todo__edit-form {
+  flex: 1;
+}
+
+.todo__input {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.todo__edit,
+.todo__remove {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  padding: 0 5px;
+  height: 19px;
+}
+
+.filters {
+  display: flex;
+}
+
+.filter-input {
+  display: none;
+}
+
+.filter-label {
+  flex: 1;
+  text-align: center;
+  padding: 5px;
+  border: 1px solid black;
+  border-left: 0;
+}
+
+.filter-label:first-of-type {
+  border-left: 1px solid black;
+}
+
+.filter-input:checked + .filter-label {
+  background-color: aqua;
+}

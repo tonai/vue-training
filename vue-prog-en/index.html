@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Progressive Vue.js todo</title>
+    <link href="./styles.css" rel="stylesheet" />
+    <script src="https://unpkg.com/vue@3"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>{{ title }}</h1>
+      <form @submit.prevent="handleSubmit">
+        <input
+          class="new-todo"
+          v-model.trim="newTodo"
+        />
+      </form>
+      <label>
+        <input
+          type="checkbox"
+          :checked="allDone"
+          @change="handleChange"
+          :indeterminate.prop="indeterminate"
+        />
+        <template v-if="allDone">Mark all to be done</template>
+        <template v-else>Mark all done</template>
+      </label>
+      <ul class="todo-list">
+        <todo-item
+          v-for="todo of filteredTodos"
+          :key="todo.id"
+          :todo="todo"
+          @update:todo="Object.assign(todo, $event)"
+          @update:todo="handleTodo(todo.id, $event)"
+        />
+      </ul>
+      <div>{{ allDoneLabel }}</div>
+      <button type="button" @click="display = 'all'">All</button>
+      <button type="button" @click="display = 'todo'">To do</button>
+      <button type="button" @click="display = 'done'">Done</button>
+    </div>
+    <script src="./TodoItem.js"></script>
+    <script src="./App.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>

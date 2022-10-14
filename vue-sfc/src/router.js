@@ -1,5 +1,9 @@
+import { defineAsyncComponent } from "vue";
 import { createWebHistory, createRouter } from "vue-router";
-import TodoList from "./TodoList.vue";
+
+// import TodoList from "./TodoList.vue";
+const TodoList = defineAsyncComponent(() => import("./TodoList.vue"));
+const Timer = defineAsyncComponent(() => import("./Timer.vue"));
 
 const routes = [
   {
@@ -7,7 +11,7 @@ const routes = [
     component: TodoList,
     beforeEnter() {
       let todos = JSON.parse(localStorage.getItem("todos"));
-      if (!todos) {
+      if (!todos || Object.keys(todos).length === 0) {
         todos = { 0: [] };
         localStorage.setItem("todos", JSON.stringify(todos));
       }
@@ -24,6 +28,10 @@ const routes = [
         return "/";
       }
     },
+  },
+  {
+    path: "/timer",
+    component: Timer,
   },
 ];
 

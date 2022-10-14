@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import TodoItem from "./TodoItem.vue";
 import { useTodos } from "./composables/useTodos";
@@ -7,7 +7,8 @@ import { useTodos } from "./composables/useTodos";
 const route = useRoute();
 
 // data
-const { todos, id } = useTodos();
+const { addTodo, updateTodo, removeTodo } = inject("todoLists");
+const { todos } = useTodos();
 const title = ref("Vue.js Todo App");
 const newTodo = ref("");
 const display = ref("todo");
@@ -15,11 +16,11 @@ const input = ref(null);
 
 // computed
 const allDone = computed(
-  () => todos.length > 0 && todos.every((todo) => todo.done)
+  () => todos.value.length > 0 && todos.value.every((todo) => todo.done)
 );
 const allDoneLabel = computed(() => (allDone.value ? "Nothing to do" : ""));
-const filteredTodos = computed(() =>
-  todos.filter(
+const filteredTodos = computed(() => 
+  todos.value.filter(
     (todo) =>
       display.value === "all" ||
       (display.value === "done" && todo.done) ||
@@ -27,33 +28,24 @@ const filteredTodos = computed(() =>
   )
 );
 const indeterminate = computed(() =>
-  todos.some((todo) => todo.done !== todos[0].done)
+  todos.value.some((todo) => todo.done !== todos.value[0].done)
 );
 
 // methods
-function findTodoIndex(id) {
-  return todos.findIndex((todo) => todo.id === id);
-}
 function handleSubmit() {
   if (newTodo.value !== "") {
-    todos.push({
-      text: newTodo.value,
-      done: false,
-      id: id.value++,
-    });
+    addTodo(route.params.id, newTodo.value);
     newTodo.value = "";
   }
 }
 function handleChange(event) {
-  todos.forEach((todo) => (todo.done = event.target.checked));
+  todos.value.forEach((todo) => (todo.done = event.target.checked));
 }
 function handleTodo(id, newTodo) {
-  const index = findTodoIndex(id);
-  todos[index] = newTodo;
+  updateTodo(route.params.id, newTodo);
 }
 function handleDelete(id) {
-  const index = findTodoIndex(id);
-  todos.splice(index, 1);
+  removeTodo(route.params.id, id);
 }
 
 // lifecycle
@@ -82,7 +74,7 @@ onMounted(() => input.value.focus());
   <TransitionGroup class="todo-list" name="todo-list" tag="ul">
     <todo-item
       v-for="todo of filteredTodos"
-      :key="todo.id"
+      :key="`${route.params.id}-${todo.id}`"
       :todo="todo"
       @update:todo="handleTodo(todo.id, $event)"
     >

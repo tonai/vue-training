@@ -7,7 +7,7 @@ const emit = defineEmits(["update:todo"]);
 // data
 const isEditing = ref(false);
 const text = ref(props.todo.text);
-const input = ref(null)
+const input = ref(null);
 
 // methods
 function handleDone(event) {
@@ -22,6 +22,11 @@ function handleSubmit() {
     text: text.value,
   });
 }
+function onAfterEnter() {
+  if (isEditing.value) {
+    input.value.focus();
+  }
+}
 
 // watch
 watch(
@@ -29,8 +34,6 @@ watch(
   (newValue) => {
     if (!newValue) {
       text.value = props.todo.text;
-    } else {
-      input.value.focus();
     }
   },
   { flush: "post" }
@@ -46,16 +49,22 @@ watch(
       :id="'done-' + todo.id"
       type="checkbox"
     />
-    <form v-if="isEditing" @submit.prevent="handleSubmit">
-      <input v-model="text" ref="input" />
-    </form>
-    <label
-      v-else
-      class="todo__text"
-      :class="{ 'todo__text--done': todo.done }"
-      :for="'done-' + todo.id"
-      >{{ todo.text }}</label
-    >
+    <Transition name="edit" mode="out-in" @after-enter="onAfterEnter">
+      <form
+        class="todo__edit-form"
+        v-if="isEditing"
+        @submit.prevent="handleSubmit"
+      >
+        <input class="todo__input" v-model="text" ref="input" />
+      </form>
+      <label
+        v-else
+        class="todo__text"
+        :class="{ 'todo__text--done': todo.done }"
+        :for="'done-' + todo.id"
+        >{{ todo.text }}</label
+      >
+    </Transition>
     <input class="todo__edit" type="checkbox" v-model="isEditing" />
     <slot></slot>
   </li>
@@ -102,5 +111,20 @@ watch(
   border: 0;
   padding: 0 5px;
   height: 19px;
+}
+
+.edit-enter-active,
+.edit-leave-active {
+  transition: all 0.25s ease-out;
+}
+
+.edit-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.edit-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
 }
 </style>
